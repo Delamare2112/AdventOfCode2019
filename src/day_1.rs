@@ -1,7 +1,16 @@
 use aoc_19::{get_args, Part};
 
 fn calc_fuel_requirement(mass: usize) -> usize {
-    (mass / 3) - 2
+    (mass / 3).checked_sub(2).unwrap_or(0)
+}
+
+fn calc_fuel_requirement_of_fuel(mass: usize) -> usize {
+    if mass > 0 {
+        let cost = calc_fuel_requirement_of_fuel(calc_fuel_requirement(mass));
+        mass + cost
+    } else {
+        mass
+    }
 }
 
 #[test]
@@ -16,8 +25,16 @@ fn part_1(input: &String) -> usize {
         .sum()
 }
 
+#[test]
+fn simple_test_2() {
+    assert_eq!(part_2(&String::from("100756")), 50346);
+}
+
 fn part_2(input: &String) -> usize {
-    unimplemented!()
+    input
+        .lines()
+        .map(|line| calc_fuel_requirement_of_fuel(calc_fuel_requirement(line.parse().unwrap())))
+        .sum()
 }
 
 fn main() {
