@@ -1,0 +1,5 @@
+/target
+**/*.rs.bk
+input.txt
+.idea/
+Cargo.lock
