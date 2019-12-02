@@ -13,11 +13,6 @@ fn calc_fuel_requirement_of_fuel(mass: usize) -> usize {
     }
 }
 
-#[test]
-fn simple_test_1() {
-    assert_eq!(calc_fuel_requirement(1969), 654)
-}
-
 fn part_1(input: &String) -> usize {
     input
         .lines()
@@ -25,16 +20,21 @@ fn part_1(input: &String) -> usize {
         .sum()
 }
 
-#[test]
-fn simple_test_2() {
-    assert_eq!(part_2(&String::from("100756")), 50346);
-}
-
 fn part_2(input: &String) -> usize {
     input
         .lines()
         .map(|line| calc_fuel_requirement_of_fuel(calc_fuel_requirement(line.parse().unwrap())))
         .sum()
+}
+
+#[test]
+fn simple_test_1() {
+    assert_eq!(calc_fuel_requirement(1969), 654)
+}
+
+#[test]
+fn simple_test_2() {
+    assert_eq!(part_2(&String::from("100756")), 50346);
 }
 
 fn main() {
