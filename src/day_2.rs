@@ -31,8 +31,19 @@ fn part_1(input: &mut Vec<usize>) -> usize {
     input[0]
 }
 
-fn part_2(input: &String) -> usize {
-    unimplemented!()
+fn part_2(input: &mut Vec<usize>) -> usize {
+    for noun in 0..100 {
+        for verb in 0..100 {
+            let mut program = input.clone();
+            program[1] = noun;
+            program[2] = verb;
+            execute_program(&mut program);
+            if program[0] == 19690720 {
+                return 100 * noun + verb;
+            }
+        }
+    }
+    panic!("cannot find solution!")
 }
 
 #[test]
@@ -46,8 +57,8 @@ fn main() {
     let args = get_args();
     let mut program = parse_input(&args.input);
     let solution = match args.part {
-        Part::One => part_1(&mut program), // 337061 is too low
-        Part::Two => part_2(&args.input),
+        Part::One => part_1(&mut program),
+        Part::Two => part_2(&mut program),
     };
     println!("{}", solution);
 }
