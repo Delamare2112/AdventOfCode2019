@@ -8,10 +8,10 @@ use std::collections::HashMap;
 
 type Input = String;
 type Output = usize;
+type Cursor = Point2<isize>;
 
-fn part_1(input: &Input) -> Output {
+fn traverse(input: &Input, action: &mut dyn FnMut(Cursor, &mut u8, u8) -> ()) {
     let mut map = HashMap::<isize, HashMap<isize, u8>>::new();
-    let mut shortest = std::usize::MAX;
     let re = Regex::new(r"(?m)(.)(\d+)").expect("failed to compile regex!");
     for (i, line) in input.lines().map(|line| re.captures_iter(line)).enumerate() {
         let i = i + 1;
@@ -19,7 +19,7 @@ fn part_1(input: &Input) -> Output {
         for command in line {
             let direction = command[1].chars().next().unwrap();
             let amount = command[2].parse().unwrap();
-            let mut action: Box<dyn FnMut<(), Output = Point2<isize>>> = match direction {
+            let mut move_action: Box<dyn FnMut<(), Output = Cursor>> = match direction {
                 'U' => Box::new(|| {
                     cursor.y += 1;
                     cursor.clone()
@@ -39,23 +39,30 @@ fn part_1(input: &Input) -> Output {
                 _ => Box::new(|| cursor.clone()),
             };
             for _ in 0..amount {
-                let cursor = action();
+                let cursor = move_action();
                 let cell = map
                     .entry(cursor.x)
                     .or_default()
                     .entry(cursor.y)
                     .or_default();
-                if *cell > 0 && *cell != i as u8 {
-                    let distance = (abs(cursor.x) + abs(cursor.y)) as usize;
-                    if shortest > distance {
-                        shortest = distance;
-                    }
-                } else {
-                    *cell = i as u8;
-                }
+                action(cursor, cell, i as u8);
             }
         }
     }
+}
+
+fn part_1(input: &Input) -> Output {
+    let mut shortest = std::usize::MAX;
+    traverse(input, &mut |cursor, cell, id| {
+        if *cell > 0 && *cell != id {
+            let distance = (abs(cursor.x) + abs(cursor.y)) as usize;
+            if shortest > distance {
+                shortest = distance;
+            }
+        } else {
+            *cell = id;
+        }
+    });
     shortest
 }
 
